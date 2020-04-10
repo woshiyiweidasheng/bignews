@@ -15,6 +15,7 @@
   <script src="./libs/jquery-1.12.4.min.js"></script>
   <!-- 引入bootstrap的js文件 -->
   <script src="./libs/bootstrap/js/bootstrap.min.js"></script>
+  <script src="./js/http.js"></script>
 </head>
 
 <body>
@@ -41,3 +42,28 @@
 </body>
 
 </html>
+<script>
+  $(function(){
+    $('.input_sub').on('click',function(e){
+      e.preventDefault();
+      let username=$('.input_txt').val().trim();
+      let password=$('.input_pass').val().trim();
+      $.post({
+        url:bigNew.user_login,
+        data:{
+          username:username,
+          password:password,
+        },
+        success:backData=>{
+          if(backData.code==200){
+            alert('登录成功');
+            localStorage.setItem('token',backData.token)
+            window.location.href='./index.html';
+          }else{
+            alert('登陆失败');
+          }
+        }
+      })
+    })
+  })
+</script>
