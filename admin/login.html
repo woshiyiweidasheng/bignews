@@ -38,29 +38,63 @@
       </form>
     </div>
   </div>
+  <!-- 模态框（Modal） -->
+  <div class="modal fade" id="myModalOne" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h4 class="modal-title" id="myModalLabel">温馨提示</h4>
+        </div>
+        <div class="modal-body">登陆成功</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div>
+  <!-- /.modal -->
+   <!-- 模态框（Modal） -->
+   <div class="modal fade" id="myModalTwo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h4 class="modal-title" id="myModalLabel">温馨提示</h4>
+        </div>
+        <div class="modal-body">登陆失败，用户名或密码输入错误</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div>
+  <!-- /.modal -->
 
 </body>
 
 </html>
 <script>
-  $(function(){
-    $('.input_sub').on('click',function(e){
+  $(function () {
+    $('.input_sub').on('click', function (e) {
       e.preventDefault();
-      let username=$('.input_txt').val().trim();
-      let password=$('.input_pass').val().trim();
+      let username = $('.input_txt').val().trim();
+      let password = $('.input_pass').val().trim();
       $.post({
-        url:bigNew.user_login,
-        data:{
-          username:username,
-          password:password,
+        url: bigNew.user_login,
+        data: {
+          username: username,
+          password: password,
         },
-        success:backData=>{
-          if(backData.code==200){
-            alert('登录成功');
-            localStorage.setItem('token',backData.token)
-            window.location.href='./index.html';
-          }else{
-            alert('登陆失败');
+        success: backData => {
+          if (backData.code == 200) {
+            $('#myModalOne').modal('show');
+            $('#myModalOne').on('hidden.bs.modal', function () {
+              localStorage.setItem('token', backData.token)
+              window.location.href = './index.html';
+            })
+          } else {
+            $('#myModalTwo').modal('show');
           }
         }
       })
