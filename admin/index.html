@@ -83,6 +83,7 @@
             }
         })
         $('ul.level02>li').on('click',function(){
+            $('div.level01').eq(1).addClass('active').siblings('div').removeClass('active')
             $(this).addClass('active').siblings().removeClass('active')
         })
     })

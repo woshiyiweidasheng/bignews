@@ -14,6 +14,7 @@
     <script src="./libs/bootstrap/js/bootstrap.min.js"></script>
     <!-- 引入模板引擎js文件 -->
     <script src="./libs/template-web.js"></script>
+    <script src="./js/http.js"></script>
 </head>
 
 <body>
@@ -51,5 +52,136 @@
             </table>
         </div>
     </div>
+    <!-- 模态框 -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <input type="hidden" id="ycy">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">New message</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">分类名称:</label>
+                            <input type="text" class="form-control" id="recipient-name">
+                        </div>
+                        <div class="form-group">
+                            <label for="message-text" class="control-label">分类别名:</label>
+                            <input class="form-control" id="message-text"></input>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="bianorxz">Send message</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /模态框 -->
+</body>
+<script id="temp_category" type="text/html">
+        {{each data v}}
+        <tr>
+            <td>{{v.name}}</td>
+            <td>{{v.slug}}</td>
+            <td class="text-center">
+                <a href="javascript:void(0)" data-toggle="modal" data-id={{v.id}} data-target="#myModal" class="btn btn-info btn-xs">编辑</a>
+                <a href="javascript:void(0)" class="btn btn-danger btn-xs">删除</a>
+            </td>
+        </tr>
+        {{/each}}
+    </script>
+<script>
+    // 初始化
+    getData()
+    function getData() {
+        $.get({
+            url: bigNew.category_list,
+            success: backData => {
+                console.log(backData);
+                let resHtml = template('temp_category', backData)
+                $('tbody').html(resHtml)
+            }
+        })
+    }
+    // 编辑和新增
+    $('#myModal').on('show.bs.modal', function (e) {
+        console.log(e.relatedTarget);
+        if (e.relatedTarget == $('#xinzengfenlei')[0]) {
+            $('#exampleModalLabel').text('新增分类');
+            $('#bianorxz').text('新增').addClass('btn-success');
+
+        } else {
+            $('#exampleModalLabel').text('编辑分类');
+            $('#bianorxz').text('编辑').addClass('btn-info');
+            console.log($(e.relatedTarget).data('id'));
+            $('#ycy').val($(e.relatedTarget).data('id'))
+            $('#recipient-name').val($(e.relatedTarget).parents('tr').find('td').eq(0).text())
+            $('#message-text').val($(e.relatedTarget).parents('tr').find('td').eq(1).text())
+        }
+    })
+
+    $('#bianorxz').on('click', function () {
+        if ($(this).hasClass('btn-success')) {
+            //新增
+            $.post({
+                url: bigNew.category_add,
+                data: {
+                    name: $('#recipient-name').val(),
+                    slug: $('#message-text').val(),
+                },
+                success: backData => {
+                    if (backData.code == 201) {
+                        $('#myModal').modal('hide')
+                        alert('创建成功');
+                        getData();
+                    }
+                }
+            })
+        } else {
+            //编辑
+            $.post({
+                url: bigNew.category_edit,
+                data: {
+                    id: $('#ycy').val(),
+                    name: $('#recipient-name').val(),
+                    slug: $('#message-text').val(),
+                },
+                success: backData => {
+                    console.log(backData);
+                    if (backData.code == 200) {
+                        $('#myModal').modal('hide');
+                        alert('编辑成功');
+                        getData();
+                    }
+                }
+            })
+        }
+    })
+    //删除
+    $('tbody').on('click', '.btn-danger', function () {
+        console.log($(this).prev().data('id'));
+        if (confirm('你确定要删除吗')) {
+            $.post({
+                url: bigNew.category_delete,
+                data: {
+                    id: $(this).prev().data('id')
+                },
+                success: backData => {
+                    console.log(backData);
+                    getData();
+                }
+            })
+        }
+    })
+    //取消按钮
+    $('#myModal').on('hidden.bs.modal', function () {
+        $('form')[0].reset()
+    })
+</script>
 
 </html>
