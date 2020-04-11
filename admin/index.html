@@ -27,8 +27,7 @@
         <!-- 左侧导航栏 -->
         <div class="menu">
             <div class="level01 active"><a href="main_count.html" target="main_frame"><i class="iconfont icon-yidiandiantubiao04"></i><span>首页</span></a></div>
-            <div class="level01"><a href="#"><i class="iconfont icon-icon-article"></i><span>文章管理</span><b
-                        class="iconfont icon-arrowdownl"></b></a></div>
+            <div class="level01"><a href="article_list.html" target="main_frame"><i class="iconfont icon-icon-article"></i><span>文章管理</span><b class="iconfont icon-arrowdownl"></b></a></div>
             <ul class="level02">
                 <li><a href="article_list.html" target="main_frame"><i class="iconfont icon-previewright"></i><span>文章列表</span></a></li>
                 <li><a href="article_release.html" target="main_frame"><i class="iconfont icon-previewright"></i><span>发表文章</span></a></li>
@@ -73,6 +72,18 @@
         $('.logout').on('click',function(){
             localStorage.removeItem('token');
             $(this).attr('href','./login.html')
+        })
+        //鼠标点击效果
+        $('div.level01').on('click',function(){
+            $(this).addClass('active').siblings('div').removeClass('active');
+            $(this).find('b').toggleClass('rotate0')
+            if($(this).index()==1){
+               $('ul.level02').slideToggle();
+               $('ul.level02>li:eq(0)').addClass('active').siblings().removeClass('active')
+            }
+        })
+        $('ul.level02>li').on('click',function(){
+            $(this).addClass('active').siblings().removeClass('active')
         })
     })
 </script>
