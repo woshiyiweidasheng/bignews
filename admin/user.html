@@ -81,7 +81,7 @@
         $.get({
             url: bigNew.user_detail,
             success: backData => {
-                console.log(backData);
+                // console.log(backData);
                 for (let k in backData.data) {
                     if (k == 'userPic') {
                         $('#' + k).attr('src', backData.data[k])
@@ -109,7 +109,7 @@
                         $.get({
                             url: bigNew.user_info,
                             success: backData => {
-                                console.log(backData);
+                                // console.log(backData);
                                parent.$('.user_info>img,.user_center_link>img').attr('src', backData.data.userPic);
                                parent.$('.user_info>span>i').text(backData.data.nickname)
                             }

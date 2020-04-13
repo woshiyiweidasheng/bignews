@@ -63,7 +63,7 @@
                 'Authorization': localStorage.getItem('token'),
             },
             success:backData=>{
-                console.log(backData);
+                // console.log(backData);
                 $('.user_info>img,.user_center_link>img').attr('src',backData.data.userPic);
                 $('.user_info>span>i').text(backData.data.nickname)
             }
