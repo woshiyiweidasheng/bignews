@@ -10,11 +10,18 @@
     <link rel="stylesheet" href="css/reset.css">
     <link rel="stylesheet" href="css/iconfont.css">
     <link rel="stylesheet" href="css/main.css">
+    <!-- 引入jedate的css文件 -->
+    <link rel="stylesheet" href="./libs/jedate/css/jeDate-test.css">
+    <link rel="stylesheet" href="./libs/jedate/css/jedate.css">
     <!-- jq -->
     <script src="./libs/jquery-1.12.4.min.js"></script>
     <!-- 模板引擎 -->
     <script src="./libs/template-web.js"></script>
+    <!-- 引入jedate的js文件 -->
     <script src="./js/http.js"></script>
+    <script src="./libs/jedate/js/jedate.js"></script>
+    <!-- 引入wangEditor的js文件 -->
+    <script src="./libs/wangEditor.min.js"></script>
 </head>
 
 <body>
@@ -26,7 +33,7 @@
             <form class="form-horizontal article_form" id="form">
                 <div class="form-group">
                     <label for="inputTitle" class="col-sm-2 control-label">文章标题：</label>
-                    <div class="col-sm-10">
+                    <div class="col-sm-8">
                         <input type="text" name="title" class="form-control title" id="inputTitle" placeholder="文章标题文字">
                     </div>
                 </div>
@@ -52,11 +59,20 @@
                 <div class="form-group">
                     <label class="col-sm-2 control-label">发布时间：</label>
                     <div class="col-sm-4">
+                        <!-- 日期插件css样式 -->
+                        <input type="text" class="jeinput" name="date" id="testico" placeholder="YYYY-MM-DD">
+                        <div class="icons jebtns"
+                            onclick="jeDate('#testico',{zIndex:99999,trigger:false,format: 'YYYY-MM-DD'})">
+                        </div>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">文章内容：</label>
-                    <div class="col-sm-10">
+                    <div class="col-sm-8">
+                        <!-- 富文本编辑器样式 -->
+                        <div id="editor">
+                            <p><i>请输入您的内容</i></p>
+                        </div>
                     </div>
                 </div>
                 <div class="form-group">
@@ -71,24 +87,78 @@
 </body>
 <script id="temp_list" type="text/html">
     {{each data v}}
-    <option>{{v.name}}</option>
+    <option value={{v.id}}>{{v.name}}</option>
     {{/each}}
 </script>
 <script>
     //头像预览
-    $('#inputCover').on('change',function(){
-        let files=this.files[0];
-        let url=URL.createObjectURL(files);
-        $('.article_cover').attr('src',url)
+    $('#inputCover').on('change', function () {
+        let files = this.files[0];
+        let url = URL.createObjectURL(files);
+        $('.article_cover').attr('src', url)
     })
     //渲染文章类别
     $.get({
-        url:bigNew.category_list,
-        success:backData=>{
+        url: bigNew.category_list,
+        success: backData => {
             console.log(backData);
-            let res_list=template('temp_list',backData)
+            let res_list = template('temp_list', backData)
             $('.category').html(res_list)
         }
+    })
+    //调用日期插件方法
+    jeDate("#testico", {
+        format: "YYYY-MM-DD",
+        isTime: false,
+        minDate: "2014-09-19 00:00:00",
+        isinitVal: true,
+        zIndex: 99999
+    })
+    //富文本编辑器方法
+    var E = window.wangEditor
+    var editor = new E('#editor')
+    editor.create()
+    //发布按钮
+    $('.btn-success').on('click', function (e) {
+        e.preventDefault()
+        let fd = new FormData($('form')[0]);
+        console.log(fd.get('categoryId'));
+        fd.append('content', editor.txt.text());
+        fd.append('state', '已发布')
+        $.post({
+            url: bigNew.article_publish,
+            data: fd,
+            processData: false,
+            contentType: false,
+            success: backData => {
+                if (backData.code == 200) {
+                    alert('新增成功');
+                    parent.$('ul.level02>li:eq(0)').addClass('active').siblings().removeClass('active')
+                    window.location.href = './article_list.html'
+                }
+            }
+        })
+    })
+    //草稿按钮
+    $('.btn-draft').on('click', function (e) {
+        e.preventDefault()
+        let fd = new FormData($('form')[0]);
+        console.log(fd.get('categoryId'));
+        fd.append('content', editor.txt.text());
+        $.post({
+            url: bigNew.article_publish,
+            data: fd,
+            processData: false,
+            contentType: false,
+            success: backData => {
+                if (backData.code == 200) {
+                    alert('已存为草稿');
+                    parent.$('ul.level02>li:eq(0)').addClass('active').siblings().removeClass('active')
+                    window.location.href = './article_list.html'
+
+                }
+            }
+        })
     })
 </script>
 
