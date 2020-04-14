@@ -96,7 +96,7 @@
         <td class="text-center">{{$value.state}}</td>
         <td class="text-center">
             <a href="article_edit.html" class="btn btn-default btn-xs">编辑</a>
-            <a href="javascript:void(0);" class="btn btn-danger btn-xs delete">删除</a>
+            <a href="javascript:void(0);" data-id="{{$value.id}}" class="btn btn-danger btn-xs delete">删除</a>
         </td>
     </tr>
     {{/each}}
@@ -115,10 +115,11 @@
             }
         })
         function getData(page, callBack) {
+           window.myPage = page;
             $.get({
                 url: bigNew.article_query,
                 data: {
-                    type: $('#selCategory').val(),
+                    type: $('#selCategory').val(),                                
                     state: $('#selStatus').val(),
                     perpage: 3,
                     page: page,
@@ -128,11 +129,14 @@
                     if (backData.code == 200) {
                         let resHtmlQuery = template('temp_query', backData.data)
                         $('tbody').html(resHtmlQuery);
-                        if (backData.data.data.length!=0&&callBack != null) {
+                        if (backData.data.data.length != 0 && callBack != null) {
                             $('#pagination').show().next().hide()
                             callBack(backData);
-                        }else if(backData.data.data.length==0){
+                        } else if (backData.data.data.length == 0 && backData.data.totalPage == 0) {
                             $('#pagination').hide().next().show()
+                        } else if (backData.data.totalPage == myPage - 1 && backData.data.data.length == 0) {
+                            myPage--;
+                            $('#pagination').twbsPagination('changeTotalPages', backData.data.totalPage, myPage);
                         }
                     }
                 }
@@ -171,8 +175,30 @@
                 });
             })
         })
-
-
+        //删除
+        $('tbody').on('click', '.delete', function (e) {
+            e.preventDefault();
+            if (confirm('你确定要删除吗')) {
+                $.post({
+                    url: bigNew.article_delete,
+                    data: {
+                        id: $(this).data('id'),
+                    },
+                    success: backData => {
+                        if (backData.code == 204) {
+                            $(this).parents('tr').remove();
+                            getData(myPage, function (backData) {
+                                $('#pagination').twbsPagination('changeTotalPages', backData.data.totalPage, myPage);
+                            })
+                        }
+                    }
+                })
+            }
+        })
+        //发表按钮
+        $('#release_btn').on('click',function(){
+            parent.$('ul.level02>li:eq(1)').addClass('active').siblings().removeClass('active')
+        })
 
     })
 </script>
