@@ -279,7 +279,7 @@
     {{each data v}}
     <li>
         <span>{{v.author.charAt(0)}}</span>
-        <b><em>{{v.author}}</em> {{v.date}} {{v.time}}</b>
+        <b><em>{{v.author}}</em> {{v.date}}说：</b>
         <strong>{{v.intro}}</strong>
     </li>
     {{/each}}
@@ -288,6 +288,12 @@
 <script id="temp_attention" type="text/html">
     {{each data v}}
     <li><a href="#">{{v.intro}}</a></li>
+    {{/each}}
+</script>
+<!-- 下拉菜单文章类型模板 -->
+<script id="temp_category" type="text/html">
+    {{each data v}}
+    <li><a href="./list.html?{{v.id}}">{{v.name}}</a></li>
     {{/each}}
 </script>
 <script>
@@ -331,7 +337,6 @@
             }
         })
         //焦点关注
-        
         $.get({
             url: 'http://localhost:8030/api/v1/index/attention',
             success: backData => {
@@ -339,6 +344,28 @@
                 let res_attention= template('temp_attention', backData);
                 $('.guanzhu_list').html(res_attention)
             }
+        })
+        //下拉菜单
+        $.get({
+            url:'http://localhost:8030/api/v1/index/category',
+            success:backData=>{
+                console.log(backData);
+                if(backData.code==200){
+                    let res_category=template('temp_category',backData)
+                    //横向
+                    $('.left_menu').html(res_category);
+                    //竖向
+                    $('.level_two').html('<li class="up"></li>'+res_category)
+                }
+            }
+        })
+        //搜索按钮
+        $('.search_btn').on('click',function(){
+            let searchValue=$('.search_txt').val().trim();
+            if(searchValue==''){
+                return;
+            }
+            window.location.href='./list.html?search='+searchValue;
         })
     })
 </script>
