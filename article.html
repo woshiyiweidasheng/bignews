@@ -208,7 +208,90 @@
     <!-- 引入模板引擎js文件 -->
     <script src="./js/template-web.js"></script>
     <script src="./js/jquery-1.12.4.min.js"></script>
-
+    <script id="temp_ar" type="text/html">
+            <div class="article_info">{{data.author}} 发布于 {{data.date}}&nbsp;&nbsp;&nbsp;分类: {{data.category}}&nbsp;&nbsp;&nbsp;阅读:
+                ({{data.read}})&nbsp;&nbsp;&nbsp;评论: ({{data.comments}})</div>
+    </script>
+    <!-- 评论板块模板 -->
+    <script id="temp_comment" type="text/html">
+        {{each data v}}
+        <div class="comment_detail_list">
+            <div class="person_pic fl">{{v.author.charAt(0)}}</div>
+            <div class="name_time fl"><b>{{v.author}}</b><span>{{v.date}} {{v.time}}</span></div>
+            <div class="comment_text fl">
+                {{v.content}}
+            </div>
+        </div>
+        {{/each}}
+    </script>
 </body>
+<script>
+    let id = window.location.search.split('=')[1];
+    console.log(id);
+    if (id == undefined) {
+        window.location.href = './index.html'
+    }
+    $.get({
+        url: 'http://localhost:8030/api/v1/index/article',
+        data: {
+            id: id
+        },
+        success: backData => {
+            // console.log(backData);
+            if (backData.code == 200) {
+                $('.breadcrumb>a').eq(0).attr('href', './index.html')
+                $('.breadcrumb>a').eq(1).html(backData.data.category).attr('href', './list.html?id=' + backData.data.categoryId);
+                $('.article_title').html(backData.data.title);
+                let resHtml = template('temp_ar', backData)
+                $('.article_info').html(resHtml);
+                $('.article_con').html(backData.data.content);
+                if (backData.data.prev == null) {
+                    $('.article_links>a').eq(0).html('无')
+                    $('.article_links>a').eq(1).html(backData.data.next.title).attr('href', './article.html?id=' + backData.data.next.id)
+                } else if (backData.data.next == null) {
+                    $('.article_links>a').eq(0).html(backData.data.prev.title).attr('href', './article.html?id=' + backData.data.prev.id)
+                    $('.article_links>a').eq(1).html('无')
+                } else {
+                    $('.article_links>a').eq(0).html(backData.data.prev.title).attr('href', './article.html?id=' + backData.data.prev.id)
+                    $('.article_links>a').eq(1).html(backData.data.next.title).attr('href', './article.html?id=' + backData.data.next.id)
+                }
+
+            }
+        }
+    })
+    //评论
+    $.get({
+        url: 'http://localhost:8030/api/v1/index/get_comment',
+        data: {
+            articleId: id,
+        },
+        success: backData => {
+            // console.log(backData);
+            if (backData.code == 200) {
+                let resHtml=template('temp_comment',backData)
+                $('.comment_list_con').html(resHtml)
+            }
+        }
+    })
+  //发表评论
+  $('.comment_sub').on('click',function(e){
+      e.preventDefault()
+      $.post({
+          url:'http://localhost:8030/api/v1/index/post_comment',
+          data:{
+            author:$('.comment_name').val(),
+            content:$('.comment_input').val(),
+            articleId:id,
+          },
+          success:backData=>{
+            //   console.log(backData);
+              if(backData.code==201){
+                  alert('发表成功');
+                  $('.comment_form')[0].reset()
+              }
+          }
+      })
+  })
+</script>
 
 </html>

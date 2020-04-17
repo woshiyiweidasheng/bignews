@@ -10,8 +10,11 @@
     <link rel="stylesheet" href="css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="css/jquery.pagination.css">
     <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
     <script type="text/javascript" src="js/jquery-1.12.4.min.js"></script>
     <script type="text/javascript" src="js/jquery.pagination.min.js"></script>
+    <script src="./js/jquery.twbsPagination.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
 </head>
 
 <body>
@@ -228,5 +231,64 @@
     <!-- 导包template -->
     <script src="./js/template-web.js"></script>
 </body>
+<script id="temp_newList" type="text/html">
+    {{each data v}}
+    <div class="common_news_list">
+        <a href="./article.html?id={{v.id}}" class="list_pic"><img src={{v.cover}} alt=""></a>
+        <h4><a href="./article.html?id={{v.id}}">{{v.title}}</a></h4>
+        <p>{{@ v.intro}}
+        </p>
+        <div class="new_info">
+            <span>标签：{{v.category}}&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<i class="fa fa-eye"></i>&nbsp;阅读( {{v.read}}
+                )&nbsp;&nbsp;&nbsp;<i class="fa fa-commenting"></i>&nbsp;评论( {{v.comments}} )</span>
+            <b>发布于 {{v.date}}</b>
+        </div>
+    </div>
+    {{/each}}
+</script>
+<script>
+    let value = window.location.search;
+    let value1 = value.split('=')[0]
+    let value2 = value.split('=')[1]
+    console.log(value, value1, value2);
+    value2 = decodeURI(value2)
+    if (value1 == '') {
+        window.location.href = './index.html';
+    } else if (value1 == '?id') {
+        //通过id进来的
+        $.get({
+            url: 'http://localhost:8030/api/v1/index/search',
+            data: {
+                type: value2
+            },
+            success: backData => {
+                console.log(backData);
+                if (backData.data.data.length != 0) {
+                    let resNewList = template('temp_newList', backData.data);
+                    $('.left_con').html('<div class="list_title"><h3>' + backData.data.data[0].category + '</h3 ></div >' + resNewList);
+                } else {
+                    $('.left_con').html('<div class="list_title"><h3>没有数据！！</h3></div >');
+                }
+            }
+        })
+    } else if (value1 == '?search') {
+        //通过search进来的
+        $.get({
+            url: 'http://localhost:8030/api/v1/index/search',
+            data: {
+                key: value2,
+            },
+            success: backData => {
+                console.log(backData);
+                if (backData.data.data.length != 0) {
+                    let resNewList = template('temp_newList', backData.data);
+                    $('.left_con').html(resNewList);
+                } else {
+                    $('.left_con').html('<div class="list_title"><h3>没有数据！！</h3 ></div > ');
+                }
+            }
+        })
+    }
+</script>
 
 </html>

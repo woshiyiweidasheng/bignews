@@ -232,8 +232,8 @@
 <script id="temp_latest" type="text/html">
     {{each data v}}
     <div class="common_news_list">
-        <a href="#" class="list_pic"><img src={{v.cover}} alt=""></a>
-            <h4><a href="#">{{v.title}}</a></h4>
+        <a href="./article.html?id={{v.id}}" class="list_pic"><img src={{v.cover}} alt=""></a>
+            <h4><a href="./article.html?id={{v.id}}">{{v.title}}</a></h4>
             <p>{{v.intro}}
                     </p>
             <div class="new_info">
@@ -249,12 +249,12 @@
     {{each data v}}
     {{if $index==0}}
     <li class="first">
-        <a href="#"><img src={{v.cover}} alt=""></a>
+        <a href="./article.html?id={{v.id}}"><img src={{v.cover}} alt=""></a>
         <p>{{v.title}}</p>
     </li>
     {{else}}
     <li>
-        <a href="#"><img src={{v.cover}}  alt=""></a>
+        <a href="./article.html?id={{v.id}}"><img src={{v.cover}}  alt=""></a>
         <p>{{v.title}}</p>
     </li>
     {{/if}}
@@ -264,13 +264,13 @@
 <script id="temp_rank" type="text/html">
     {{each data v}}
     {{if $index==0}}
-    <li><span class="first">{{$index+1}}</span><a href="#">{{v.title}}</a></li>
+    <li><span class="first">{{$index+1}}</span><a href="./article.html?id={{v.id}}">{{v.title}}</a></li>
     {{else if $index==1}}
-    <li><span class="second">{{$index+1}}</span><a href="#">{{v.title}}</a></li>
+    <li><span class="second">{{$index+1}}</span><a href="./article.html?id={{v.id}}">{{v.title}}</a></li>
     {{else if $index==2}}
-    <li><span class="third">{{$index+1}}</span><a href="#">{{v.title}}</a></li>
+    <li><span class="third">{{$index+1}}</span><a href="./article.html?id={{v.id}}">{{v.title}}</a></li>
     {{else}}
-    <li><span>{{$index+1}}</span><a href="#">{{v.title}}</a></li>
+    <li><span>{{$index+1}}</span><a href="./article.html?id={{v.id}}">{{v.title}}</a></li>
     {{/if}}
     {{/each}}
 </script>
@@ -293,7 +293,7 @@
 <!-- 下拉菜单文章类型模板 -->
 <script id="temp_category" type="text/html">
     {{each data v}}
-    <li><a href="./list.html?{{v.id}}">{{v.name}}</a></li>
+    <li><a href="./list.html?id={{v.id}}">{{v.name}}</a></li>
     {{/each}}
 </script>
 <script>

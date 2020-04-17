@@ -167,30 +167,42 @@
 </body>
 <script id="temp_comment" type="text/html">
   {{each data v}}
-  <tr>
+  {{if v.state=="待审核"}}
+  <tr class="danger">
     <td>{{v.author}}</td>
     <td>{{v.content}}</td>
     <td>{{v.title}}</td>
     <td>{{v.date}}</td>
-    {{if v.state=="已通过"}}
-    <td>已通过</td>
-    <td class="text-center">
-      <a href="javascript:void(0);;" class="btn btn-warning btn-xs" data-id="{{v.id}}">拒绝</a>
-      <a href="javascript:void(0);;" class="btn btn-danger btn-xs" data-id="{{v.id}}">删除</a>
-    </td>
-    {{else if v.state=="待审核"}}
     <td>待审核</td>
     <td class="text-center">
       <a href="javascript:void(0);;" class="btn btn-info btn-xs" data-id="{{v.id}}">批准</a>
       <a href="javascript:void(0);;" class="btn btn-danger btn-xs" data-id="{{v.id}}">删除</a>
     </td>
+  </tr>
+  {{else if v.state=="已通过"}}
+  <tr>
+    <td>{{v.author}}</td>
+    <td>{{v.content}}</td>
+    <td>{{v.title}}</td>
+    <td>{{v.date}}</td>
+    <td>已通过</td>
+    <td class="text-center">
+      <a href="javascript:void(0);;" class="btn btn-warning btn-xs" data-id="{{v.id}}">拒绝</a>
+      <a href="javascript:void(0);;" class="btn btn-danger btn-xs" data-id="{{v.id}}">删除</a>
+    </td>
+  </tr>
     {{else if v.state=="已拒绝"}}
+    <tr>
+      <td>{{v.author}}</td>
+      <td>{{v.content}}</td>
+      <td>{{v.title}}</td>
+      <td>{{v.date}}</td>
     <td>已拒绝</td>
     <td class="text-center">
       <a href="javascript:void(0);;" class="btn btn-danger btn-xs" data-id="{{v.id}}">删除</a>
     </td>
-    {{/if}}
   </tr>
+    {{/if}}
   {{/each}}
 </script>
 <script>
@@ -249,7 +261,7 @@
         success: backData => {
           // console.log(backData);
           if (backData.code == 200) {
-            $(that).attr('class', 'btn btn-warning btn-xs').text('拒绝').parent().prev().text('已通过')
+            $(that).attr('class', 'btn btn-warning btn-xs').text('拒绝').parent().prev().text('已通过').parents('tr').removeClass('danger')
           }
         }
       })
@@ -288,7 +300,7 @@
         }
       })
     })
-   
+
   })
 </script>
 
